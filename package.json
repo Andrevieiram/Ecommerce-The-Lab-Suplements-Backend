@@ -1,4 +1,5 @@
 {
+  "type": "module", "__comment":"O express só aceita se for em módulos" ,
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

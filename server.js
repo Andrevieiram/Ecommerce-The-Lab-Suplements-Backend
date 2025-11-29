@@ -1,41 +1,16 @@
-const dotenv = require('dotenv');
+import express from 'express';
+import dotenv from 'dotenv';
+import userRouter from  './src/routers/user-router.js';
+import productRouter from  './src/routers/product-router.js';
+import promotionRouter from  './src/routers/promotion-router.js';
 dotenv.config();
-const express = require('express');
 const app = express();
 app.use(express.json());
 
-app.get('/api/user:name',  async (req,res) => {
-    const response = await getUserByName(req.params.name)
-
-    if (response.error){
-        return res.status(500).json({data: 'Não foi  possível listar os usuários '})
-    } else if (response.notFound){
-        return res.status(404).json({data: 'Usuário não encontrado'})
-    } else {
-        return res.status(200).json({data: response.user})
-    }
-})
-
-app.get('/api/product', (req,res) => {
-    
-})
-
-app.get('/api/promotion', (req,res) => {
-    
-})
-
-app.post('/api/user', (req,res) => {
-
-})
-
-app.post('/api/product', (req,res) => {
-    
-})
-
-app.post('/api/promotion', (req,res) => {
-    
-})
-
+// Definindo rotas para o servidor e suas respectivas responsabilidades
+app.use('/user',userRouter)
+app.use('/product',productRouter)
+app.use('/promotion',promotionRouter)
 
 app.listen(process.env.PORT, () => {
     console.log(`Seu servidor está rodando na porta ${process.env.PORT}`)
