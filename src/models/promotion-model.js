@@ -1,9 +1,9 @@
-app.get('/api/promotion', (req,res) => {
-    
+
+import mongoose from "mongoose";
+const Schema = mongoose.Schema({
+
 })
 
+const promotionModel = mongoose.model("Promotions", Schema);
 
-
-app.post('/api/promotion', (req,res) => {
-    
-})
+export default promotionModel;

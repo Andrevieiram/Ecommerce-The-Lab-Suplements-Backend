@@ -4,12 +4,15 @@ import userController from '../controllers/user-controller.js'
 // Criando rotas para o recurso user
 const router = express.Router();
 router.route("/")
-.get(userController.getAll) //getAll
-.post(userController.create) //create
+.get(userController.getAll) 
+.post(userController.create) 
 
 router.route("/:id")
-.get(userController.getOne) //getOne
-.delete(userController.deleteOne) //deleteOne
-.put(userController.updateOne) //updateOne
+.get(userController.getOne) 
+.delete(userController.deleteOne) 
+.put(userController.updateOne) 
+
+router.route("/login")
+.post(userController.login)
 
 export default router;
