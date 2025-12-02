@@ -1,8 +1,9 @@
 import userModel from '../models/user-model.js';
 import bcrypt from 'bcryptjs'; 
+import generateToken from '../utils/generateToken.js'; // NOVO IMPORT
 
 const userController = {
-    // Recuperar Todos os Usuários 
+    // Recuperar Todos os Usuários (READ)
     // GET /api/users
     getAll: async function (req, res) {
         try {
@@ -14,7 +15,7 @@ const userController = {
         }
     },
 
-    // Recuperar Usuário por ID 
+    // Recuperar Usuário por ID (READ)
     // GET /api/users/:id
     getOne: async function (req, res) {
         try {
@@ -60,7 +61,7 @@ const userController = {
         try {
             const updateData = req.body;
             
-            // Hashear a senha se ela estiver sendo atualizada
+            // CORREÇÃO DE SEGURANÇA: Hashear a senha se ela estiver sendo atualizada
             if (updateData.password) {
                 const salt = await bcrypt.genSalt(10);
                 updateData.password = await bcrypt.hash(updateData.password, salt);
@@ -98,19 +99,21 @@ const userController = {
                 return res.status(404).json({ message: 'Usuário não encontrado para remoção' });
             }
 
+            // Status 204 significa 'No Content'
             res.status(204).send(); 
         } catch (error) {
             res.status(500).json({ message: 'Erro ao remover usuário.', error: error.message });
         }
     },
 
-    // Login de Usuário (LOGIN - Exemplo Básico)
+    // Login de Usuário (JWT IMPLEMENTADO)
     // POST /api/users/login
     login: async function (req, res) {
         const { email, password } = req.body;
         
         try {
-            const user = await userModel.findOne({ email });
+            // 1. Encontrar o usuário e forçar o retorno da senha (+password) para comparação
+            const user = await userModel.findOne({ email }).select('+password'); 
 
             if (!user) {
                 return res.status(401).json({ message: 'Credenciais inválidas.' });
@@ -120,12 +123,15 @@ const userController = {
             const isMatch = await user.matchPassword(password);
 
             if (isMatch) {
+                const token = generateToken(user._id);
+
+                // Cria um novo objeto para remover a senha antes de enviar a resposta
                 const { password, ...userWithoutPassword } = user.toObject();
+
                 return res.status(200).json({
-                    message: 'Login bem-sucedido!',
+                    message: 'Login bem-sucedido! Use este token para acessar rotas protegidas.',
                     user: userWithoutPassword,
-                    // geração de um JWT (Token)
-                    token: 'PLACEHOLDER_JWT_TOKEN' 
+                    token: token 
                 });
             } else {
                 return res.status(401).json({ message: 'Credenciais inválidas.' });
