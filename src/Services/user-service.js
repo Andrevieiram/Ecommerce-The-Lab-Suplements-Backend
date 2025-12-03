@@ -1,25 +1,25 @@
 import userModel from '../models/user-model.js';
+import jwt from 'jsonwebtoken'; 
 import bcrypt from 'bcryptjs';
 
 const userService = {
     create: async function (userData) {
-        // Verifica se o usuário já existe
-        const userExists = await userModel.findOne({ email: userData.email });
-        if (userExists) {
+
+        // Verifica se o e-mail ou CPF já estão cadastrados
+        const existingEmail = await userModel.findOne({ email: userData.email });
+        if (existingEmail) {
             throw new Error("Usuário já cadastrado com este e-mail");
         }
 
-        // Verifica se o CPF já existe
         const existingCpf = await userModel.findOne({ cpf: userData.cpf });
         if (existingCpf) {
             throw new Error("Usuário já cadastrado com este CPF");
         }
 
-        // Criptografando a senha
+        // Criptografa a senha antes de salvar
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(userData.password, salt);
 
-        // Prepara o objeto para salvar
         const newUser = {
             name: userData.name,
             email: userData.email,
@@ -27,14 +27,34 @@ const userService = {
             cpf: userData.cpf
         };
 
-        // Salva no banco
+        // Salva o novo usuário no banco de dados
         const result = await userModel.create(newUser);
-
-        // Remove a senha do retorno para segurança
         const userResponse = result.toObject();
         delete userResponse.password;
 
         return userResponse;
+    },
+
+    login: async function (loginData) {
+        const user = await userModel.findOne({ email: loginData.email });
+        
+        // Verifica se o usuário existe
+        if (!user) {
+            throw new Error("E-mail ou senha inválidos");
+        }
+
+        // Compara a senha enviada com a senha criptografada no banco
+        const isPasswordMatch = await bcrypt.compare(loginData.password, user.password);
+
+        if (!isPasswordMatch) {
+            throw new Error("E-mail ou senha inválidos");
+        }
+
+        
+        const token = jwt.sign({ id: user._id, email: user.email }, 
+            process.env.JWT_SECRET, { expiresIn: '1d' });
+
+        return token;
     }
 }
 
