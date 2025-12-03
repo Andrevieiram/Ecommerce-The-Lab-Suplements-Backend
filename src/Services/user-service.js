@@ -55,7 +55,12 @@ const userService = {
             process.env.JWT_SECRET, { expiresIn: '1d' });
 
         return token;
-    }
-}
+    },
 
+    getAll: async function () {
+        // Busca todos os usuários e remove o campo senha
+        const users = await userModel.find({}).select('-password');
+        return users;
+    }
+};
 export default userService;

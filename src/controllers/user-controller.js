@@ -21,8 +21,16 @@ const userController = {
         }
     },
     
+    
     getAll: async function (req, res) {
+        try {
+            const users = await userService.getAll();
+            res.status(200).json({ message: "Lista de usuários", data: users });
+        } catch (err) {
+            res.status(500).json({ message: "Erro ao buscar usuários" });
+        }
     },
+    
 
     login: async function (req, res) {
         try {
