@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors'; 
 
-import userRouter from './src/routers/user-router.js';
+import userRouter from './src/routers/user-router.js';''
 import productRouter from './src/routers/product-router.js';
 import promotionRouter from './src/routers/promotion-router.js';
 

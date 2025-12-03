@@ -1,12 +1,13 @@
 // TERCEIRA CAMADA
 
 import productModel from '../models/product-model.js';
+import productService from '../services/product-service.js';
 
 // Definindo as funções do controller 
 const productController = {
     getAll: async function (req, res) {
         try{
-            const result = await productModel.find({})
+            const result = await productService.getAll();
             res.status(200).json({message: 'Produtos encontrados com sucesso', data: result});
 
         }catch (err){
@@ -18,7 +19,7 @@ const productController = {
             if (!req.params.code){
                 res.status(400).json({message: "O código do produto é obrigatório"});
             }
-            const result = await productModel.findOne({code: req.params.code});
+            const result = await productService.getOne({code: req.params.code});
             const product = result.toObject();
             res.status(200).json({message: "Produto encontrado com sucesso", data:product});
         }catch (err){
@@ -30,14 +31,22 @@ const productController = {
             if (!req.params.code){
                 res.status(400).json({message: "O código do produto é obrigatório"});
             }
-            const result = await productModel.deleteOne({code: req.params.code});
+            const result = await productService.deleteOne({code: req.params.code});
             res.status(200).json({message: "Produto deletado com sucesso"});
         }catch (err){
             res.status(500).json({message: "Não foi possível encontrar o produto"});
         }
     },
-    updateOne: function (req, res) {
-        
+    updateOne: async function (req, res) {
+        try{
+            if (!req.params.code){
+                res.status(400).json({message: "O código do produto é obrigatório"});
+            }
+            const result = await productService.updateOne({code: req.params.code}, req.body);
+            res.status(200).json({message: "Produto atualizado com sucesso"});
+        }catch (err){
+            res.status(500).json({message: "Não foi possível encontrar o produto"});
+        }
     },
     create: async function (req, res) {
         try{
@@ -45,15 +54,32 @@ const productController = {
                 res.status(400).json({message: "Os campos obrigatórios não foram preenchidos"});
             }
             const product = req.body;
-            const result = await productModel.create(product);
+            const result = await productService.create(product);
             res.status(201).json({message: "Produto criado com sucesso", data: result});
         }catch (err){
             res.status(500).json({message: "Não foi possível criar o produto"});
         }
 
     },
-    login: function (req, res) {
-        
+    login: async function (req, res) {
+        try {
+            const { email, password } = req.body;
+
+            if (!email || !password) {
+                return res.status(400).json({ message: "Email e senha são obrigatórios" });
+            }
+
+            const token = await userService.login({ email, password });
+
+            res.status(200).json({ message: "Login realizado com sucesso", token: token });
+
+        } catch (err) {
+            if (err.message === "E-mail ou senha inválidos") {
+                return res.status(401).json({ message: err.message });
+            }
+            console.error(err);
+            res.status(500).json({ message: "Erro ao realizar login" });
+        }
     }
 }
 
