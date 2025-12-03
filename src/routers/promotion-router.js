@@ -12,5 +12,8 @@ router.delete("/delete/:id", promotionController.deleteOne)
 
 router.get("/get/:id", promotionController.getOne)
 
+router.put("/update/:id", promotionController.updateOne)
+
+
 
 export default router;
