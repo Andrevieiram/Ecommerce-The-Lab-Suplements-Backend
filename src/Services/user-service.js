@@ -70,6 +70,37 @@ const userService = {
         }
 
         return await userModel.deleteOne({ _id: id });
+    },
+
+
+    update: async function (id, userData) {
+        const user = await userModel.findById(id);
+        if (!user) {
+            throw new Error("Usuário não encontrado");
+        }
+
+        if (userData.email && userData.email !== user.email) {
+            const emailExists = await userModel.findOne({ email: userData.email });
+            if (emailExists) throw new Error("Email já está em uso por outro usuário");
+        }
+
+        const updateData = {
+            name: userData.name,
+            email: userData.email,
+            cpf: userData.cpf
+        };
+
+        if (userData.password && userData.password.trim() !== "") {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(userData.password, salt);
+        }
+
+        const result = await userModel.findByIdAndUpdate(id, updateData, { new: true });
+        
+        const userResponse = result.toObject();
+        delete userResponse.password;
+
+        return userResponse;
     }
 };
 export default userService;

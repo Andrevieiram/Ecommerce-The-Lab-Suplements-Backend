@@ -14,4 +14,8 @@ router.route("/login")
 router.route("/:id")
     .delete(authMiddleware, userController.deleteOne);
 
+router.route("/:id")
+    .delete(authMiddleware, userController.deleteOne)
+    .put(authMiddleware, userController.update); 
+
 export default router;
