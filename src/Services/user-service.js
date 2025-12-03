@@ -61,6 +61,15 @@ const userService = {
         // Busca todos os usuários e remove o campo senha
         const users = await userModel.find({}).select('-password');
         return users;
+    },
+
+    delete: async function (id) {
+        const user = await userModel.findById(id);
+        if (!user) {
+            throw new Error("Usuário não encontrado");
+        }
+
+        return await userModel.deleteOne({ _id: id });
     }
 };
 export default userService;
