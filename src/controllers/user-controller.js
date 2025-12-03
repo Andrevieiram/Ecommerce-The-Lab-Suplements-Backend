@@ -5,16 +5,20 @@ const userController = {
 
     },
     getOne: function (req, res) {
-        
+
     },
     deleteOne: function (req, res) {
-        
+
     },
     updateOne: function (req, res) {
-        
+
     },
     create: function (req, res) {
-        
+
+    },
+
+    login: function (req, res) {
+
     }
 }
 
