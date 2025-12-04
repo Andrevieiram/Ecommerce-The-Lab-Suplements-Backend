@@ -33,29 +33,30 @@ const productService = {
     },
 
     getOne: async function (code) {
-        const existingProduct = await productModel.findOne({ code: code });
-        const result = existingProduct.toObject();
-        return result;
+        const existingProduct = await productModel.findOne({ code });
+        return existingProduct;
     },
 
     deleteOne: async function (code) {
-        const product = await productModel.deleteOne({code: code});
-        const result = existingProduct.toObject();
-        return result;
+        const existingProduct = await productModel.findOne({ code });
+        if (!existingProduct) {
+            throw new Error("Produto não encontrado");
+        }else{
+            return await productModel.deleteOne({ code });
+        };
     },
 
     updateOne: async function (code, updateData) {
         // Verifica se o produto existe
-        const product = await productModel.findOne({code: code});
+        const product = await productModel.findOne({code});
 
         if (!product) {
             throw new Error("Produto não encontrado");
         }
 
-        const result = await productModel.updateOne({code: code}, updateData);
-        const productResponse = result.toObject();
-        delete productResponse._id;
-        return productResponse;
+        const result = await productModel.updateOne({code}, updateData);
+
+        return result;
     }
 };
 export default productService;

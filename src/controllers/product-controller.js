@@ -18,8 +18,9 @@ const productController = {
         try{
             if (!req.params.code){
                 res.status(400).json({message: "O código do produto é obrigatório"});
+                return;
             }
-            const result = await productService.getOne({code: req.params.code});
+            const result = await productService.getOne(req.params.code);
             const product = result.toObject();
             res.status(200).json({message: "Produto encontrado com sucesso", data:product});
         }catch (err){
@@ -31,7 +32,7 @@ const productController = {
             if (!req.params.code){
                 res.status(400).json({message: "O código do produto é obrigatório"});
             }
-            const result = await productService.deleteOne({code: req.params.code});
+            const result = await productService.deleteOne(req.params.code);
             res.status(200).json({message: "Produto deletado com sucesso"});
         }catch (err){
             res.status(500).json({message: "Não foi possível encontrar o produto"});
@@ -42,8 +43,8 @@ const productController = {
             if (!req.params.code){
                 res.status(400).json({message: "O código do produto é obrigatório"});
             }
-            const result = await productService.updateOne({code: req.params.code}, req.body);
-            res.status(200).json({message: "Produto atualizado com sucesso"});
+            const result = await productService.updateOne(req.params.code, req.body);
+            res.status(200).json({message: "Produto atualizado com sucesso"  });
         }catch (err){
             res.status(500).json({message: "Não foi possível encontrar o produto"});
         }
@@ -60,26 +61,6 @@ const productController = {
             res.status(500).json({message: "Não foi possível criar o produto"});
         }
 
-    },
-    login: async function (req, res) {
-        try {
-            const { email, password } = req.body;
-
-            if (!email || !password) {
-                return res.status(400).json({ message: "Email e senha são obrigatórios" });
-            }
-
-            const token = await userService.login({ email, password });
-
-            res.status(200).json({ message: "Login realizado com sucesso", token: token });
-
-        } catch (err) {
-            if (err.message === "E-mail ou senha inválidos") {
-                return res.status(401).json({ message: err.message });
-            }
-            console.error(err);
-            res.status(500).json({ message: "Erro ao realizar login" });
-        }
     }
 }
 
