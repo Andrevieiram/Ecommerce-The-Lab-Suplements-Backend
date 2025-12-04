@@ -36,7 +36,8 @@ const userService = {
     },
 
     login: async function (loginData) {
-        const user = await userModel.findOne({ email: loginData.email });
+        const email = loginData.email;
+        const user = await userModel.findOne({ email});
         
         // Verifica se o usuário existe
         if (!user) {
