@@ -1,17 +1,16 @@
 import express from 'express';
-import promotionController from '../controllers/promotion-controller.js'
+import promotionController from '../controllers/promotion-controller.js';
+import authMiddleware from '../middlewares/auth-middleware.js';
 
 const router = express.Router();
+
 router.route("/")
-.get(promotionController.getAll) 
-.post(promotionController.create) 
+    .get(authMiddleware, promotionController.getAll) 
+    .post(authMiddleware, promotionController.create); 
 
 router.route("/:id")
-.get(promotionController.getOne) 
-.delete(promotionController.deleteOne) 
-.put(promotionController.updateOne) 
-
-router.route("/login")
-.post(promotionController.login)
+    .get(authMiddleware, promotionController.getOne) 
+    .delete(authMiddleware, promotionController.deleteOne) 
+    .put(authMiddleware, promotionController.updateOne);
 
 export default router;

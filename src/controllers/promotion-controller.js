@@ -1,56 +1,56 @@
-import promotionModel from '../models/promotion-model.js';
+import promotionService from '../Services/promotion-service.js';
 
 const promotionController = {
     getAll: async function (req, res) {
-        try{
-            const result = await promotionModel.find({})
-            res.status(200).json({message: 'Promoções encontrados com sucesso', data: result});
-
-        }catch (err){
-            res.status(500).json({message: 'Não foi possível encontrar os Promoções'});
+        try {
+            const result = await promotionService.getAll();
+            res.status(200).json({ message: 'Promoções listadas', data: result });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ message: 'Erro ao buscar promoções' });
         }
     },
+
     getOne: async function (req, res) {
-        try{
-            if (!req.params.code){
-                res.status(400).json({message: "O código da promoção é obrigatório"});
-            }
-            const result = await promotionModel.findOne({code: req.params.code});
-            const promotion = result.toObject();
-            res.status(200).json({message: "Promoção encontrado com sucesso", data:promotion});
-        }catch (err){
-            res.status(500).json({message: "Não foi possível encontrar a promoção"});
+        try {
+            const result = await promotionService.getOne(req.params.id);
+            res.status(200).json({ data: result });
+        } catch (err) {
+            res.status(404).json({ message: "Erro ao buscar promoção" });
         }
     },
-    deleteOne: async function (req, res) {
-        try{
-            if (!req.params.code){
-                res.status(400).json({message: "O código da promoção é obrigatório"});
-            }
-            const result = await promotionModel.deleteOne({code: req.params.code});
-            res.status(200).json({message: "Promoção deletada com sucesso"});
-        }catch (err){
-            res.status(500).json({message: "Não foi possível encontrar a promoção"});
-        }
-    },
-    updateOne: function (req, res) {
-        
-    },
-    create: async function (req, res) {
-        try{
-            if(req.body.code == null || req.body.name == null || req.body.price == null || req.body.stock == null || req.body.category == null){
-                res.status(400).json({message: "Os campos obrigatórios não foram preenchidos"});
-            }
-            const promotion = req.body;
-            const result = await promotionModel.create(promotion);
-            res.status(201).json({message: "Promoção criada com sucesso", data: result});
-        }catch (err){
-            res.status(500).json({message: "Não foi possível criar a promoção"});
-        }
 
+    create: async function (req, res) {
+        try {
+            const { discountPercentage, targetProductCode } = req.body;
+            
+            if (!discountPercentage || !targetProductCode) {
+                return res.status(400).json({ message: "Selecione o produto e a porcentagem." });
+            }
+
+            const result = await promotionService.create(req.body);
+            res.status(201).json({ message: "Promoção criada!", data: result });
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
     },
-    login: function (req, res) {
-        
+
+    updateOne: async function (req, res) {
+        try {
+            const result = await promotionService.update(req.params.id, req.body);
+            res.status(200).json({ message: "Atualizado", data: result });
+        } catch (err) {
+            res.status(400).json({ message: err.message });
+        }
+    },
+
+    deleteOne: async function (req, res) {
+        try {
+            await promotionService.delete(req.params.id);
+            res.status(200).json({ message: "Removido" });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
     }
 }
 
