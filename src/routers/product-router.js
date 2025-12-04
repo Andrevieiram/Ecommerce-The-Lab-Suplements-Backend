@@ -1,12 +1,9 @@
-// SEGUNDA CAMADA
 
 import express from 'express';
 import productController from '../controllers/product-controller.js'
 
-// Instanciando o router do express
 const router = express.Router();
 
-// Definindo conexão das rotas com as responsabilidades do controller de product
 router.route("/")
 .get(productController.getAll) 
 .post(productController.create) 
