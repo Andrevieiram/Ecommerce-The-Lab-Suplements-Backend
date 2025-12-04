@@ -9,15 +9,12 @@ const router = express.Router();
 
 // Definindo conexão das rotas com as responsabilidades do controller de product
 router.route("/")
-.get( productController.getAll) 
-.post( productController.create) 
+.get( authMiddleware,productController.getAll) 
+.post( authMiddleware, productController.create) 
 
 router.route("/:code")
-.get( productController.getOne) 
-.delete( productController.deleteOne) 
-.put( productController.updateOne) 
-
-router.route("/login")
-.post(productController.login)
+.get( authMiddleware, productController.getOne) 
+.delete( authMiddleware, productController.deleteOne) 
+.put( authMiddleware, productController.updateOne) 
 
 export default router;
