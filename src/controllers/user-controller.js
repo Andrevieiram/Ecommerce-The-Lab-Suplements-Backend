@@ -51,7 +51,51 @@ const userController = {
             console.error(err);
             res.status(500).json({ message: "Erro ao realizar login" });
         }
-    }
+    },
+
+    deleteOne: async function (req, res) {
+        try {
+            const id = req.params.id;
+
+            if (!id) {
+                return res.status(400).json({ message: "ID do usuário é obrigatório" });
+            }
+
+            await userService.delete(id);
+
+            res.status(200).json({ message: "Usuário excluído com sucesso" });
+
+        } catch (err) {
+            if (err.message === "Usuário não encontrado") {
+                return res.status(404).json({ message: err.message });
+            }
+            console.error(err);
+            res.status(500).json({ message: "Erro ao excluir o usuário" });
+        }
+    },
+
+
+    update: async function (req, res) {
+        try {
+            const id = req.params.id;
+            const data = req.body;
+
+            if (!id) {
+                return res.status(400).json({ message: "ID obrigatório" });
+            }
+
+            const updatedUser = await userService.update(id, data);
+
+            res.status(200).json({ message: "Usuário atualizado com sucesso", data: updatedUser });
+
+        } catch (err) {
+            if (err.message === "Usuário não encontrado" || err.message.includes("já está em uso")) {
+                return res.status(400).json({ message: err.message });
+            }
+            console.error(err);
+            res.status(500).json({ message: "Erro ao atualizar usuário" });
+        }
+    },
 };
 
 export default userController;
