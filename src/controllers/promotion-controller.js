@@ -1,4 +1,4 @@
-import promotionService from '../Services/promotion-service.js';
+import promotionService from '../services/promotion-service.js';
 
 const promotionController = {
     getAll: async function (req, res) {
